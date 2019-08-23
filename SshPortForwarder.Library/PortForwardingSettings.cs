@@ -6,7 +6,7 @@
     public class PortForwardingSettings
     {
         /// <summary>
-        /// Local IP address which will accept connections. Default: localhost.
+        /// Local IP address which will accept connections. Default: 127.0.0.1.
         /// </summary>
         public string LocalHost { get; set; } = "127.0.0.1";
 
@@ -16,7 +16,7 @@
         public uint LocalPort { get; set; }
 
         /// <summary>
-        /// Remote host in SSH server's network to which incoming connections will be forwarded. Default: localhost.
+        /// Remote host in SSH server's network to which incoming connections will be forwarded. Default: 127.0.0.1.
         /// </summary>
         public string RemoteHost { get; set; } = "127.0.0.1";
 
