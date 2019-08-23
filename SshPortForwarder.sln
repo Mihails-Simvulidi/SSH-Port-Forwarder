@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SshPortForwarder.Library", "SshPortForwarder.Library\SshPortForwarder.Library.csproj", "{4A381DF8-9348-479D-B3AB-8D11246854C6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SshPortForwarder.ConsoleTestApp", "SshPortForwarder.ConsoleTestApp\SshPortForwarder.ConsoleTestApp.csproj", "{D2B81649-33B9-4576-AD25-ED5AA5563275}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7985AD9C-4C6D-4A29-BC90-13F643332F08}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A381DF8-9348-479D-B3AB-8D11246854C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A381DF8-9348-479D-B3AB-8D11246854C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A381DF8-9348-479D-B3AB-8D11246854C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A381DF8-9348-479D-B3AB-8D11246854C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2B81649-33B9-4576-AD25-ED5AA5563275}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B81649-33B9-4576-AD25-ED5AA5563275}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B81649-33B9-4576-AD25-ED5AA5563275}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B81649-33B9-4576-AD25-ED5AA5563275}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E3798FA6-3D69-460C-86E1-8ACF6A09A1BF}
+	EndGlobalSection
+EndGlobal
