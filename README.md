@@ -51,7 +51,7 @@ Then add a configuration, sample:
 | ReconnectAfterSeconds | If connections interrupts, try reconnecting every X seconds. Default: 5 seconds. |
 | ForwardedPorts | Collection of ports to be forwarded. Required. |
 
-### **ForwardedPorts**
+### **ForwardedPorts** configuration options
 
 | Name | Description |
 | --- | --- |
