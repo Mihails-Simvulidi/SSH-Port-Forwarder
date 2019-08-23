@@ -78,6 +78,11 @@ namespace SshPortForwarder
         public string PrivateKeyPassPhrase { get; set; }
 
         /// <summary>
+        /// If connections interrupts, try reconnecting every X seconds.
+        /// </summary>
+        public int ReconnectAfterSeconds { get; set; } = 5;
+
+        /// <summary>
         /// Collection of ports to be forwarded.
         /// </summary>
         [MinLength(1)]

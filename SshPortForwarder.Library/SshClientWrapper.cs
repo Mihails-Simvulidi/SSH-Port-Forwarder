@@ -29,7 +29,7 @@ namespace SshPortForwarder
 
             retryPolicy = Policy
                 .Handle<AggregateException>()
-                .WaitAndRetryForever(retryAttempt => TimeSpan.FromSeconds(5),
+                .WaitAndRetryForever(retryAttempt => TimeSpan.FromSeconds(settings.ReconnectAfterSeconds),
                     (exception, sleepDuration) => logger?.LogWarning($"Failed to connect to SSH server: {exception.Message} Reconnecting in {sleepDuration} seconds..."));
 
             Connect();
