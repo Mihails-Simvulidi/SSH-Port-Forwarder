@@ -1,6 +1,8 @@
 # SSH-Port-Forwarder
 **SSH-Port-Forwarder** is a .NET Standard library implementing *AddSshTunnel* extension method for the interface *Microsoft.Extensions.DependencyInjection.IServiceCollection*. *AddSshTunnel* establishes SSH tunnel using connection info stored in the app configuration. It can be used, for example, to establish secure connection to the database in ASP.NET Core applications. It uses [SSH.NET library](https://github.com/sshnet/SSH.NET/) internally.
 
+[![Version](https://img.shields.io/nuget/dt/SshPortForwarder.svg)](https://www.nuget.org/packages/SshPortForwarder)
+
 ## Usage
 
 To use in an ASP.NET application, add the following code to the *Startup.ConfigureServices* method:
