@@ -48,7 +48,7 @@ Then add a configuration, sample:
 | PrivateKey | Authentication option 2: using private key stored in configuration. |
 | PrivateKeyFilePath | Authentication option 3: using path of a file containing private key. |
 | PrivateKeyPassPhrase | Passphrase for private key authentication. |
-| ReconnectAfterSeconds | If connections interrupts, try reconnecting every X seconds. Default: 5 seconds. |
+| ReconnectAfterSeconds | If connection interrupts, try reconnecting every X seconds. Default: 15 seconds. |
 | ForwardedPorts | Collection of ports to be forwarded. Required. |
 
 ### **ForwardedPorts** configuration options

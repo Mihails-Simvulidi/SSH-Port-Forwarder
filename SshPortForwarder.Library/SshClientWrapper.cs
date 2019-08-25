@@ -16,8 +16,8 @@ namespace SshPortForwarder
     {
         private readonly ILogger logger;
         private readonly RetryPolicy retryPolicy;
-        private readonly SshClient sshClient;
         private readonly SshSettings settings;
+        private readonly SshClient sshClient;
 
         public SshClientWrapper(IOptionsMonitor<SshSettings> settingsMonitor, ILogger<SshClientWrapper> logger)
         {
@@ -29,28 +29,12 @@ namespace SshPortForwarder
 
             retryPolicy = Policy
                 .Handle<AggregateException>()
-                .WaitAndRetryForever(retryAttempt => TimeSpan.FromSeconds(settings.ReconnectAfterSeconds),
-                    (exception, sleepDuration) => logger?.LogWarning($"Failed to connect to SSH server: {exception.Message} Reconnecting in {sleepDuration} seconds..."));
+                .WaitAndRetryForever(
+                    retryAttempt => TimeSpan.FromSeconds(settings.ReconnectAfterSeconds),
+                    (exception, sleepDuration) => logger?.LogWarning($"Failed to connect to SSH server: {exception.Message}\r\n" +
+                        $"Reconnecting in {sleepDuration.TotalSeconds} seconds..."));
 
             Connect();
-
-            foreach (PortForwardingSettings portForwardingSettings in settings.ForwardedPorts)
-            {
-                ForwardedPortLocal forwardedPortLocal = new ForwardedPortLocal(portForwardingSettings.LocalHost, portForwardingSettings.LocalPort, portForwardingSettings.RemoteHost, portForwardingSettings.RemotePort);
-                {
-                    sshClient.AddForwardedPort(forwardedPortLocal);
-                    try
-                    {
-                        forwardedPortLocal.Start();
-                        logger?.LogInformation($"Port forwarding from {forwardedPortLocal.BoundHost}:{forwardedPortLocal.BoundPort} to server's {forwardedPortLocal.Host}:{forwardedPortLocal.Port} started.");
-                    }
-                    catch (SocketException e)
-                    when (e.SocketErrorCode == SocketError.AddressAlreadyInUse && portForwardingSettings.IgnorePortInUseError)
-                    {
-                        logger?.LogWarning($"Port forwarding from {forwardedPortLocal.BoundHost}:{forwardedPortLocal.BoundPort} to server's {forwardedPortLocal.Host}:{forwardedPortLocal.Port} could not be started: {e.Message}.");
-                    }
-                }
-            }
 
             if (!sshClient.ForwardedPorts.Any(p => p.IsStarted))
             {
@@ -61,19 +45,70 @@ namespace SshPortForwarder
 
         private void Connect()
         {
-            logger?.LogInformation($"Connecting to {sshClient.ConnectionInfo.Host}:{sshClient.ConnectionInfo.Port}...");
-            retryPolicy.Execute(() => sshClient.Connect());
-            logger?.LogInformation($"Connected to {sshClient.ConnectionInfo.Host}:{sshClient.ConnectionInfo.Port}.");
+            retryPolicy.Execute(() =>
+            {
+                try
+                {
+                    logger?.LogInformation($"Connecting to {sshClient.ConnectionInfo.Host}:{sshClient.ConnectionInfo.Port}...");
+                    sshClient.Connect();
+                    logger?.LogInformation($"Connected.");
+
+                    foreach (PortForwardingSettings portForwardingSettings in settings.ForwardedPorts)
+                    {
+                        ForwardedPortLocal forwardedPortLocal = new ForwardedPortLocal(portForwardingSettings.LocalHost, portForwardingSettings.LocalPort,
+                            portForwardingSettings.RemoteHost, portForwardingSettings.RemotePort);
+                        sshClient.AddForwardedPort(forwardedPortLocal);
+                        logger?.LogInformation($"Starting port forwarding from {forwardedPortLocal.BoundHost}:{forwardedPortLocal.BoundPort} " +
+                            $"to server's {forwardedPortLocal.Host}:{forwardedPortLocal.Port}...");
+
+                        try
+                        {
+                            forwardedPortLocal.Start();
+                        }
+                        catch (SocketException e)
+                        when (e.SocketErrorCode == SocketError.AddressAlreadyInUse && portForwardingSettings.IgnorePortInUseError)
+                        {
+                            logger?.LogWarning($"Port forwarding from {forwardedPortLocal.BoundHost}:{forwardedPortLocal.BoundPort} " +
+                                $"to server's {forwardedPortLocal.Host}:{forwardedPortLocal.Port} could not be started: {e.Message}.");
+                        }
+                    }
+                }
+                catch (Exception exception)
+                {
+                    logger?.LogWarning($"Failed to forward ports: {exception}");
+                    StopPortForwarding();
+                    throw;
+                }
+            });
+
+            logger?.LogInformation($"All port forwarding started.");
         }
 
         private void SshClient_ErrorOccurred(object sender, ExceptionEventArgs e)
         {
-            logger?.LogWarning(e.Exception.ToString());
-
-            if (!sshClient.IsConnected)
+            if (sshClient.IsConnected)
             {
+                logger?.LogWarning($"Error occurred: {e.Exception}");
+            }
+            else
+            {
+                logger?.LogWarning($"Connection to SSH server lost: {e.Exception}");
+                StopPortForwarding();
                 Connect();
             }
+        }
+
+        private void StopPortForwarding()
+        {
+            foreach (ForwardedPortLocal forwardedPortLocal in sshClient.ForwardedPorts.ToArray())
+            {
+                logger?.LogInformation($"Stopping port forwarding from {forwardedPortLocal.BoundHost}:{forwardedPortLocal.BoundPort} " +
+                    $"to server's {forwardedPortLocal.Host}:{forwardedPortLocal.Port}...");
+
+                sshClient.RemoveForwardedPort(forwardedPortLocal);
+            }
+
+            logger?.LogInformation($"All port forwarding stopped.");
         }
 
         private SshClient CreateSshClient()
